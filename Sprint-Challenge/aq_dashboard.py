@@ -6,15 +6,16 @@ import openaq
 APP = Flask(__name__)
 APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:\\Users\\charl\\Documents\\MyGithub\\DS-Unit-3-Sprint-3-Productization-and-Cloud\\Sprint-Challenge\\db.sqlite3'
 API = openaq.OpenAQ()
-DB = SQLAlchemy()
+DB = SQLAlchemy(APP)
 
 DB.init_app(APP)
 
 @APP.route('/', methods=['GET'])
 def root():
     """Base view."""
-    
+    utc_val = []
     records = Record.query.filter(Record.value >= 10).all()
+    data = get_data(utc_val)
     return str(records)
 
 class Record(DB.Model):
@@ -22,8 +23,8 @@ class Record(DB.Model):
     datetime = DB.Column(DB.String(25))
     value = DB.Column(DB.Float, nullable=False)
 
-    #def __repr__(self):
-    #    return 'TODO - write a nice representation of Records'
+    def __repr__(self):
+        return "(Time: %s, Value: %s)" % (self.datetime, self.value)
 
 
 @APP.route('/refresh')
